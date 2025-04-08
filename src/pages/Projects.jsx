@@ -3,6 +3,8 @@ import ModalButton from "../partials/components/ModalButton";
 import ProjectCards from "../partials/sections/ProjectCards";
 import ProjectForm from "../partials/sections/ProjectForm";
 import Modal from "../partials/sections/Modal";
+import Icon_BlueGreen from "../assets/images/ProjectsIcons/Icon_BlueGreen.svg";
+import Icon_DarkOrange from "../assets/images/ProjectsIcons/Icon_DarkOrange.svg";
 
 const Projects = () => {
   const [projects, setProjects] = useState([
@@ -12,20 +14,23 @@ const Projects = () => {
       description:
         "You need to create a web application that simulates a project.",
       clientName: "EF Core Inc.",
-      image: "https://via.placeholder.com/40",
+      image: Icon_BlueGreen,
+      status: "In Progress",
     },
     {
       id: 2,
       title: "Website Redesign",
       description:
         "It is necessary to develop a website redesign in a corporate style.",
-      clientName: "GitLab Inc.",
-      image: "https://via.placeholder.com/40",
+      clientName: "Nackademin",
+      image: Icon_DarkOrange,
+      status: "Completed",
     },
   ]);
   const [clients, setClients] = useState([]);
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filter, setFilter] = useState("All");
   const [currentProject, setCurrentProject] = useState(null);
   const [newProject, setNewProject] = useState({
     title: "",
@@ -41,7 +46,7 @@ const Projects = () => {
   });
 
   const handleAddProject = (project) => {
-    setNewProject([...projects, { ...project, id: Date.now() }]);
+    setProjects([...projects, { ...project, id: Date.now() }]);
     closeModal();
   };
 
@@ -52,6 +57,13 @@ const Projects = () => {
       )
     );
     closeModal();
+  };
+
+  const getFilteredProjects = () => {
+    if (filter === "Completed") {
+      return projects.filter((project) => project.status === "Completed");
+    }
+    return projects;
   };
 
   const handleDeleteProject = (id) => {
@@ -80,21 +92,50 @@ const Projects = () => {
           onClick={() => openModal()}
         />
       </div>
+      <div className="filter-buttons-wrapper">
+        <div className="filter-buttons">
+          <button
+            className={`filter-button ${filter === "All" ? "active" : ""}`}
+            onClick={() => setFilter("All")}
+          >
+            All ({projects.length})
+          </button>
+          <button
+            className={`filter-button ${
+              filter === "Completed" ? "active" : ""
+            }`}
+            onClick={() => setFilter("Completed")}
+          >
+            Completed (
+            {
+              projects.filter((project) => project.status === "Completed")
+                .length
+            }
+            )
+          </button>
+        </div>
+      </div>
       <div className="project-list">
-        {projects.length === 0 ? (
-          <p>No projects available. Click "Add Project" to create one.</p>
+        {getFilteredProjects().length === 0 ? (
+          <p>No projects available.</p>
         ) : (
           <div className="project-grid">
-            {projects.map((project) => (
+            {getFilteredProjects().map((project) => (
               <ProjectCards
                 key={project.id}
                 title={project.title}
                 description={project.description}
                 company={project.clientName}
                 logo={project.image}
+                status={project.status}
                 onEdit={() => openModal(project)}
-                onDelete={() =>
-                  setProjects(projects.filter((p) => p.id !== project.id))
+                onDelete={() => handleDeleteProject(project.id)}
+                onComplete={() =>
+                  setProjects(
+                    projects.map((p) =>
+                      p.id === project.id ? { ...p, status: "Completed" } : p
+                    )
+                  )
                 }
               />
             ))}

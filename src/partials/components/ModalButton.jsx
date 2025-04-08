@@ -6,7 +6,7 @@ const ModalButton = ({ type, target, text, onClick }) => {
       type="button"
       data-modal="true"
       data-target={target}
-      className={`btn btn-${type}`}
+      className={`btn ${type}`}
       onClick={onClick}
     >
       <span>{text}</span>

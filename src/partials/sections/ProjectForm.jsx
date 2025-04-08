@@ -1,44 +1,126 @@
 import React, { useState, useEffect } from "react";
 
 const ProjectForm = ({ project, onSubmit }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
+  const [projectName, setProjectName] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [projectOwner, setProjectOwner] = useState("");
+  const [budget, setBudget] = useState("");
 
   useEffect(() => {
     if (project) {
-      setTitle(project.title);
-      setDescription(project.description);
+      setImage(project.image);
+      setProjectName(project.projectName);
+      setClientName(project.clientName);
+      setStartDate(project.startDate);
+      setEndDate(project.endDate);
+      setProjectOwner(project.projectOwner);
+      setBudget(project.budget);
     } else {
-      setTitle("");
-      setDescription("");
+      setImage("");
+      setProjectName("");
+      setClientName("");
+      setStartDate("");
+      setEndDate("");
+      setProjectOwner("");
+      setBudget("");
     }
   }, [project]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ ...project, title, description });
+    onSubmit({
+      ...project,
+      image,
+      projectName,
+      clientName,
+      startDate,
+      endDate,
+      projectOwner,
+      budget,
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="form" onSubmit={handleSubmit}>
       <div className="form-group">
-        <label>Title</label>
+        <label htmlFor="image">Image</label>
         <input
+          id="image"
           type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={image}
+          onChange={(e) => setImage(e.target.value)}
+          placeholder="Enter image URL"
           required
         />
       </div>
       <div className="form-group">
-        <label>Description</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+        <label htmlFor="projectName">Project Name</label>
+        <input
+          id="projectName"
+          type="text"
+          value={projectName}
+          onChange={(e) => setProjectName(e.target.value)}
+          placeholder="Enter project name"
           required
         />
       </div>
-      <button type="submit">
+      <div className="form-group">
+        <label htmlFor="clientName">Client Name</label>
+        <input
+          id="clientName"
+          type="text"
+          value={clientName}
+          onChange={(e) => setClientName(e.target.value)}
+          placeholder="Enter client name"
+          required
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="startDate">Start Date</label>
+        <input
+          id="startDate"
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="endDate">End Date</label>
+        <input
+          id="endDate"
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="projectOwner">Project Owner</label>
+        <input
+          id="projectOwner"
+          type="text"
+          value={projectOwner}
+          onChange={(e) => setProjectOwner(e.target.value)}
+          placeholder="Enter project owner"
+          required
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="budget">Budget</label>
+        <input
+          id="budget"
+          type="number"
+          value={budget}
+          onChange={(e) => setBudget(e.target.value)}
+          placeholder="Enter budget"
+          required
+        />
+      </div>
+      <button className="btn btn-submit" type="submit">
         {project ? "Update Project" : "Add Project"}
       </button>
     </form>
