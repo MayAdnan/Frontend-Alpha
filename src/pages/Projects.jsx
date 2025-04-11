@@ -41,7 +41,7 @@ const Projects = () => {
     startDate: "",
     endDate: "",
     projectOwner: "",
-    budget: "",
+    budget: null,
     usersId: "",
   });
 

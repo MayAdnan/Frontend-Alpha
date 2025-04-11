@@ -1,4 +1,4 @@
-export const apiEndpoint = "https://localhost/api/auth";
+export const apiEndpoint = "https://Localhost:5173/api/auth";
 
 export const defaultValues = {
   accessToken: null,

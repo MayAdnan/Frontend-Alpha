@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import LogotypeLink from "../partials/components/LogotypeLink";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   const navigate = useNavigate();
-
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,13 +12,14 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
-    var result = await signIn(email, password);
-    if (result) {
-      navigate("/users");
+    const succeeded = await signIn(email, password);
+    if (succeeded) {
+      navigate("/projects");
+    } else {
+      setErrorMessage("Failed to sign in. Please check your credentials.");
     }
-
-    setErrorMessage("Invalid email or password");
   };
 
   return (

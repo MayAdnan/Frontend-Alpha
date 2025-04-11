@@ -14,6 +14,32 @@ const ProjectCards = ({
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const handleEdit = () => {
+    onEdit(); // Removed 'project' as it is undefined in the current context
+    setIsDropdownOpen(false);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:5173/api/projects/${project.id}`, // Ensure 'project' is passed as a prop or defined
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": import.meta.env.VITE_API_KEY,
+          },
+        }
+      );
+      if (response.ok) {
+        onDelete(project.id); // Ensure 'project' is passed as a prop or defined
+        setIsDropdownOpen(false);
+      }
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
+  };
+
   return (
     <div className="project-card">
       <div className="project-card-header">
@@ -28,13 +54,13 @@ const ProjectCards = ({
           </button>
           {isDropdownOpen && (
             <div className="dropdown-menu">
-              <button className="dropdown-item" onClick={onEdit}>
+              <button className="dropdown-item" onClick={handleEdit}>
                 <span role="img" aria-label="edit">
                   ✏️
                 </span>{" "}
                 Edit
               </button>
-              <button className="dropdown-item delete" onClick={onDelete}>
+              <button className="dropdown-item delete" onClick={handleDelete}>
                 <span role="img" aria-label="delete">
                   🗑️
                 </span>{" "}

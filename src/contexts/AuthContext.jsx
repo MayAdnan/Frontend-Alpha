@@ -27,25 +27,32 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signIn = async (email, password) => {
-    const response = await fetch(`${apiEndpoint}/signin`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": import.meta.env.VITE_X_API_KEY,
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setAuthState({
-        accessToken: data.accessToken,
-        role: data.role,
-        isAuthenticated: true,
-        loading: false,
+    try {
+      const response = await fetch(`${apiEndpoint}/signin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": import.meta.env.VITE_X_API_KEY,
+        },
+        body: JSON.stringify({ email, password }),
       });
-    } else {
-      throw new Error("Failed to sign in");
+
+      if (response.ok) {
+        const data = await response.json();
+        setAuthState({
+          accessToken: data.accessToken,
+          role: data.role,
+          isAuthenticated: true,
+          loading: false,
+        });
+      } else {
+        throw new Error("Failed to sign in");
+      }
+    } catch (error) {
+      console.error("Failed to sign in:", error); // Log the error for debugging
+      throw new Error(
+        "Failed to sign in. Please check your credentials and try again."
+      ); // Provide a user-friendly error message
     }
   };
 
