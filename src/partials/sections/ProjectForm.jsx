@@ -1,80 +1,90 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 
-const ProjectForm = ({ project, onSubmit }) => {
-  const [image, setImage] = useState("");
-  const [projectName, setProjectName] = useState("");
-  const [clientName, setClientName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [projectOwner, setProjectOwner] = useState("");
-  const [budget, setBudget] = useState("");
+const ProjectForm = ({ project, clients, users, onSubmit }) => {
+  const [formData, setFormData] = useState({
+    image: "",
+    newImage: "",
+    projectName: "",
+    clientId: "",
+    userId: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+    budget: null,
+    statusId: 1,
+  });
 
   useEffect(() => {
     if (project) {
-      setImage(project.image);
-      setProjectName(project.projectName);
-      setClientName(project.clientName);
-      setStartDate(project.startDate);
-      setEndDate(project.endDate);
-      setProjectOwner(project.projectOwner);
-      setBudget(project.budget);
-    } else {
-      setImage("");
-      setProjectName("");
-      setClientName("");
-      setStartDate("");
-      setEndDate("");
-      setProjectOwner("");
-      setBudget("");
+      setFormData({
+        image: project.image || "",
+        newImage: project.newImage || "",
+        projectName: project.projectName || "",
+        clientId: project.client?.id || "",
+        userId: project.userId || "",
+        description: project.description || "",
+        startDate: project.startDate.split("T")[0] || "",
+        endDate: project.endDate.split("T")[0] || "",
+
+        budget: project.budget || null,
+        statusId: project.status?.id || 1,
+        id: project.id,
+      });
     }
   }, [project]);
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({
-      ...project,
-      image,
-      projectName,
-      clientName,
-      startDate,
-      endDate,
-      projectOwner,
-      budget,
-    });
+    onSubmit(formData);
   };
 
   return (
     <form className="form" onSubmit={handleSubmit}>
       <div className="form-group">
-        <label htmlFor="image">Image</label>
         <input
-          id="image"
-          type="text"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-          placeholder="Enter image URL"
+          name="image"
+          value={formData.image}
+          type="file"
+          onChange={handleChange}
+          placeholder="Image here"
           required
         />
       </div>
       <div className="form-group">
         <label htmlFor="projectName">Project Name</label>
         <input
-          id="projectName"
-          type="text"
-          value={projectName}
-          onChange={(e) => setProjectName(e.target.value)}
-          placeholder="Enter project name"
+          name="projectName"
+          value={formData.projectName}
+          onChange={handleChange}
+          placeholder="Project Name"
           required
         />
       </div>
       <div className="form-group">
         <label htmlFor="clientName">Client Name</label>
         <input
-          id="clientName"
-          type="text"
-          value={clientName}
-          onChange={(e) => setClientName(e.target.value)}
+          name="clientName"
+          value={formData.clientName}
+          onChange={handleChange}
           placeholder="Enter client name"
+          required
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="description">Description</label>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          placeholder="Description"
           required
         />
       </div>

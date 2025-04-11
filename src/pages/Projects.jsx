@@ -1,32 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, use } from "react";
 import ModalButton from "../partials/components/ModalButton";
 import ProjectCards from "../partials/sections/ProjectCards";
 import ProjectForm from "../partials/sections/ProjectForm";
 import Modal from "../partials/sections/Modal";
-import Icon_BlueGreen from "../assets/images/ProjectsIcons/Icon_BlueGreen.svg";
-import Icon_DarkOrange from "../assets/images/ProjectsIcons/Icon_DarkOrange.svg";
 
 const Projects = () => {
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: "ASP.NET Web App",
-      description:
-        "You need to create a web application that simulates a project.",
-      clientName: "EF Core Inc.",
-      image: Icon_BlueGreen,
-      status: "In Progress",
-    },
-    {
-      id: 2,
-      title: "Website Redesign",
-      description:
-        "It is necessary to develop a website redesign in a corporate style.",
-      clientName: "Nackademin",
-      image: Icon_DarkOrange,
-      status: "Completed",
-    },
-  ]);
+  const [projects, setProjects] = useState([]);
   const [clients, setClients] = useState([]);
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,33 +24,132 @@ const Projects = () => {
     usersId: "",
   });
 
-  const handleAddProject = (project) => {
-    setProjects([...projects, { ...project, id: Date.now() }]);
-    closeModal();
+  useEffect(() => {
+    fetchProjects();
+    fetchClients();
+    fetchUsers();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch("https://localhost:5173/api/projects", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": import.meta.env.VITE_API_KEY,
+        },
+      });
+      const data = await response.json();
+      setProjects(data);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
   };
 
-  const handleEditProject = (updatedProject) => {
-    setProjects(
-      projects.map((project) =>
-        project.id === updatedProject.id ? updatedProject : project
-      )
-    );
-    closeModal();
+  const fetchClients = async () => {
+    try {
+      const response = await fetch("https://localhost:5173/api/clients", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": import.meta.env.VITE_API_KEY,
+        },
+      });
+      const data = await response.json();
+      setClients(data);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("https://localhost:5173/api/users", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": import.meta.env.VITE_API_KEY,
+        },
+      });
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  const handleAddProject = async (project) => {
+    try {
+      const response = await fetch("https://localhost:5173/api/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": import.meta.env.VITE_API_KEY,
+        },
+        body: JSON.stringify(project),
+      });
+      const newProject = await response.json();
+      setProjects([...projects, newProject]);
+      closeModal();
+    } catch (error) {
+      console.error("Error adding project:", error);
+    }
+  };
+
+  const handleEditProject = async (updatedProject) => {
+    try {
+      const response = await fetch(
+        `https://localhost:5173/api/projects/${updatedProject.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": import.meta.env.VITE_API_KEY,
+          },
+          body: JSON.stringify(updatedProject),
+        }
+      );
+      if (response.ok) {
+        setProjects(
+          projects.map((p) => (p.id === updatedProject.id ? updatedProject : p))
+        );
+        closeModal();
+      }
+    } catch (error) {
+      console.error("Error editing project:", error);
+    }
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    try {
+      const response = await fetch(
+        `https://localhost:5173/api/projects/${projectId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": import.meta.env.VITE_API_KEY,
+          },
+        }
+      );
+      if (response.ok) {
+        setProjects(projects.filter((project) => project.id !== projectId));
+      }
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
   };
 
   const getFilteredProjects = () => {
     if (filter === "Completed") {
-      return projects.filter((project) => project.status === "Completed");
+      return projects.filter(
+        (project) => project.status?.statusName === "Completed"
+      );
     }
     return projects;
   };
 
-  const handleDeleteProject = (id) => {
-    setProjects(projects.filter((project) => project.id !== id));
-  };
-
   const openModal = (project = null) => {
-    console.log(project);
     setCurrentProject(project);
     setIsModalOpen(true);
   };
@@ -108,8 +186,9 @@ const Projects = () => {
           >
             Completed (
             {
-              projects.filter((project) => project.status === "Completed")
-                .length
+              projects.filter(
+                (project) => project.status?.statusName === "Completed"
+              ).length
             }
             )
           </button>
@@ -123,19 +202,18 @@ const Projects = () => {
             {getFilteredProjects().map((project) => (
               <ProjectCards
                 key={project.id}
-                title={project.title}
+                title={project.projectName}
                 description={project.description}
-                company={project.clientName}
+                company={project.client?.clientName}
                 logo={project.image}
-                status={project.status}
+                status={project.status?.statusName}
                 onEdit={() => openModal(project)}
                 onDelete={() => handleDeleteProject(project.id)}
                 onComplete={() =>
-                  setProjects(
-                    projects.map((p) =>
-                      p.id === project.id ? { ...p, status: "Completed" } : p
-                    )
-                  )
+                  handleEditProject({
+                    ...project,
+                    statusId: { statusName: "Completed" },
+                  })
                 }
               />
             ))}
@@ -143,10 +221,12 @@ const Projects = () => {
         )}
       </div>
       {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
+        <Modal onClose={closeModal}>
           <h2>{currentProject ? "Edit Project" : "Add Project"}</h2>
           <ProjectForm
             project={currentProject}
+            clients={clients}
+            users={users}
             onSubmit={currentProject ? handleEditProject : handleAddProject}
           />
         </Modal>

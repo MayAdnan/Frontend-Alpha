@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
-import { defaultValues } from "./authConstants";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const apiEndpoint = `${
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5173"
@@ -8,7 +7,16 @@ const apiEndpoint = `${
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [authState, setAuthState] = useState(defaultValues);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
+  }, []);
 
   const signUp = async (formData) => {
     const response = await fetch(`${apiEndpoint}/signup`, {
@@ -37,22 +45,17 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email, password }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setAuthState({
-          accessToken: data.accessToken,
-          role: data.role,
-          isAuthenticated: true,
-          loading: false,
-        });
-      } else {
-        throw new Error("Failed to sign in");
+      const data = await response.json();
+      if (!response.ok) {
+        return false;
       }
+
+      setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      return true;
     } catch (error) {
-      console.error("Failed to sign in:", error); // Log the error for debugging
-      throw new Error(
-        "Failed to sign in. Please check your credentials and try again."
-      ); // Provide a user-friendly error message
+      console.error("Error during sign-in:", error);
+      return false;
     }
   };
 
@@ -65,14 +68,13 @@ export const AuthProvider = ({ children }) => {
     });
 
     if (response.ok) {
-      setAuthState(defaultValues);
-    } else {
-      throw new Error("Failed to sign out");
+      setUser(null);
+      localStorage.removeItem("authUser");
     }
   };
 
   return (
-    <AuthContext.Provider value={{ ...authState, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ loading, user, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
