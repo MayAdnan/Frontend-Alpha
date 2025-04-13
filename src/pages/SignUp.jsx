@@ -58,7 +58,7 @@ const SignUp = () => {
         ConfirmPassword
       );
       if (succeeded) {
-        navigate("/auth/signin", { replace: true });
+        navigate("/auth/signin");
       } else {
         setError("Sign up failed. Please try again.");
       }
@@ -76,9 +76,10 @@ const SignUp = () => {
         <div className="section-body">
           <form noValidate onSubmit={handleSubmit}>
             <div>
-              <label>First Name </label>
+              <label>First Name: </label>
               <input
                 type="text"
+                name="firstName"
                 placeholder="Enter your first name"
                 value={FirstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -90,6 +91,7 @@ const SignUp = () => {
               <label>Last Name </label>
               <input
                 type="text"
+                name="lastName"
                 placeholder="Enter your last name"
                 value={LastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -101,6 +103,7 @@ const SignUp = () => {
               <label>Email </label>
               <input
                 type="email"
+                name="email"
                 placeholder="Enter your email"
                 value={Email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -112,6 +115,7 @@ const SignUp = () => {
               <label>Password </label>
               <input
                 type="password"
+                name="password"
                 placeholder="Enter your password"
                 value={Password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -122,6 +126,7 @@ const SignUp = () => {
               <label>Confirm Password</label>
               <input
                 type="password"
+                name="confirmPassword"
                 placeholder="Confirm your password"
                 value={ConfirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}

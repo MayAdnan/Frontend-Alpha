@@ -8,8 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
     rootElement.classList.add("dark-theme");
   }
 
-  themeToggle.addEventListener("click", () => {
-    const isDarkTheme = rootElement.classList.toggle("dark-theme");
-    localStorage.setItem("theme", isDarkTheme ? "dark" : "light");
-  });
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const isDarkTheme = rootElement.classList.toggle("dark-theme");
+      localStorage.setItem("theme", isDarkTheme ? "dark" : "light");
+    });
+  }
 });

@@ -214,6 +214,17 @@
   --user-notification-text-muted-color: var(--gray-600);
 }
 
+.dark-theme {
+  --text-color: var(--white-100);
+  --background-color: var(--dark-300);
+  --card-background-color: var(--dark-400);
+  --btn-background-color: var(--blue-dark);
+  --btn-hover-background-color: var(--blue);
+  --form-input-background-color: var(--dark-400);
+  --form-input-text-color: var(--white-100);
+  --form-input-placeholder-color: var(--gray-600);
+}
+
 *,
 *::before,
 *::after {

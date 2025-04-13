@@ -27,7 +27,7 @@ const SignIn = () => {
       <div id="login">
         <div className="card">
           <div>{errorMessage}</div>
-          <h1>Sign In</h1>
+          <h1>Login</h1>
           <form onSubmit={handleSubmit} method="post" noValidate>
             <div className="form-group">
               <label className="form-label">Email</label>
@@ -35,6 +35,7 @@ const SignIn = () => {
                 type="email"
                 className="form-input"
                 placeholder="Enter email"
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
@@ -44,6 +45,7 @@ const SignIn = () => {
                 type="password"
                 className="form-input"
                 placeholder="Enter Password"
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
