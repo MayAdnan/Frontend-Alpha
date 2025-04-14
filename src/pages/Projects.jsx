@@ -67,11 +67,6 @@ const Projects = () => {
       setUsers(data);
     }
   };
-  useEffect(() => {
-    fetchProjects();
-    fetchClients();
-    fetchUsers();
-  }, []);
 
   const handleEditProject = (project) => {
     setIsEditMode(true);
@@ -115,8 +110,13 @@ const Projects = () => {
 
     const formData = new FormData();
     formData.append("Id", editProjectId || 0);
+
+    if (newProject.imageFile) {
+      formData.append("NewImage", newProject.imageFile);
+    } else if (newProject.image) {
+      formData.append("Image", newProject.image);
+    }
     formData.append("ProjectName", newProject.projectName);
-    formData.append("ClientId", newProject.clientId);
     formData.append("Description", newProject.description);
     formData.append("StartDate", newProject.startDate);
     formData.append("EndDate", newProject.endDate);
@@ -124,19 +124,13 @@ const Projects = () => {
       "Budget",
       newProject.budget !== null ? newProject.budget : ""
     );
+    formData.append("ClientId", newProject.clientId);
     formData.append("UserId", newProject.userId);
     formData.append("StatusId", newProject.statusId || 1);
     formData.append("Created", newProject.created || new Date().toISOString());
 
-    if (newProject.imageFile) {
-      formData.append("Image", newProject.imageFile, newProject.imageFile);
-    } else if (newProject.image) {
-      formData.append("Image", newProject.image);
-    }
-
-    const method = isEditMode ? "PUT" : "POST";
     const response = await fetch("https://localhost:5173/api/projects", {
-      method: method,
+      method: "PUT",
       headers: {
         "X-API-KEY": import.meta.env.VITE_API_KEY,
       },
@@ -158,12 +152,70 @@ const Projects = () => {
     );
   };
 
+  const handleAddProject = async (e) => {
+    e.preventDefault();
+    const errors = {};
+
+    if (!newProject.projectName.trim()) {
+      alert("Project name is required.");
+      return;
+    }
+    if (!newProject.startDate) {
+      alert("Start date is required.");
+      return;
+    }
+    if (!newProject.clientId) {
+      alert("Client must be selected.");
+      return;
+    }
+    if (!newProject.userId) {
+      alert("Project Owner must be selected.");
+      return;
+    }
+    if (Object.keys(errors).length > 0) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("Image", newProject.imageFile);
+    formData.append("ProjectName", newProject.projectName);
+    formData.append("Description", newProject.description || "");
+    formData.append("StartDate", newProject.startDate);
+    formData.append("EndDate", newProject.endDate || "");
+    formData.append(
+      "Budget",
+      newProject.budget !== null ? newProject.budget : ""
+    );
+    formData.append("ClientId", newProject.clientId);
+    formData.append("UserId", newProject.userId);
+    formData.append("Created", newProject.created || new Date().toISOString());
+
+    const response = await fetch("https://localhost:5173/api/projects", {
+      method: "POST",
+      headers: {
+        "X-API-KEY": import.meta.env.VITE_API_KEY,
+      },
+      body: formData,
+    });
+    if (response.ok) {
+      await fetchProjects();
+    }
+    setNewProject(primeProjectState());
+    setIsModalOpen(false);
+  };
+
   const getFilteredProjects = projects.filter((project) => {
     if (filter === "completed") {
       return project.status.id === 2;
     }
     return true;
   });
+
+  useEffect(() => {
+    fetchProjects();
+    fetchClients();
+    fetchUsers();
+  }, []);
 
   return (
     <div id="projects">
@@ -184,7 +236,13 @@ const Projects = () => {
           className={filter === "All" ? "active" : ""}
           onClick={() => setFilter("All")}
         >
-          All ({projects.length})
+          All (
+          {
+            projects.filter(
+              (project) => project.status.id === 1 || project.status.id === 2
+            ).length
+          }
+          )
         </button>
         <button
           className={filter === "Completed" ? "active" : ""}
@@ -195,14 +253,23 @@ const Projects = () => {
         </button>
       </div>
       <div className="containerproject">
-        {getFilteredProjects.map((p) => (
-          <ProjectCards
-            key={p.id}
-            project={p}
-            onEdit={handleEditProject}
-            onDelete={handleDeleteProject}
-          />
-        ))}
+        {getFilteredProjects === "all"
+          ? projects.map((p) => (
+              <ProjectCards
+                key={p.id}
+                project={p}
+                onEdit={handleEditProject}
+                onDelete={handleDeleteProject}
+              />
+            ))
+          : getFilteredProjects.map((p) => (
+              <ProjectCards
+                key={p.id}
+                project={p}
+                onEdit={handleEditProject}
+                onDelete={handleDeleteProject}
+              />
+            ))}
       </div>
       <Modal
         id="addProjectModal"
@@ -215,7 +282,7 @@ const Projects = () => {
       >
         <form
           noValidate
-          onSubmit={handleUpdateProject}
+          onSubmit={isEditMode ? handleUpdateProject : handleAddProject}
           encType="multipart/form-data"
         >
           <div className="form-group image-picker">
@@ -338,6 +405,7 @@ const Projects = () => {
 
           <div className="form-group">
             <label htmlFor="budget"> Budget</label>
+            <span className="input-group-text">$</span>
             <input
               type="number"
               id="budget"

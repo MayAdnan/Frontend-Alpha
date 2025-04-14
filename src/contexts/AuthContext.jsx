@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem("authUser");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -22,9 +22,10 @@ export const AuthProvider = ({ children }) => {
     const response = await fetch(`${apiEndpoint}/signup`, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         "X-API-KEY": import.meta.env.VITE_X_API_KEY,
       },
-      body: formData,
+      body: JSON.stringify(formData),
     });
 
     if (!response.ok) {
@@ -46,12 +47,13 @@ export const AuthProvider = ({ children }) => {
       });
 
       const data = await response.json();
+
       if (!response.ok) {
         return false;
       }
 
       setUser(data.user);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("authUser", JSON.stringify(data.user));
       return true;
     } catch (error) {
       console.error("Error during sign-in:", error);

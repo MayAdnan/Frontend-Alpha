@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 
-const ProjectCards = ({
-  title,
-  description,
-  company,
-  logo,
-  onEdit,
-  onDelete,
-}) => {
+const ProjectCards = ({ project, onDelete, onEdit }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -15,14 +8,14 @@ const ProjectCards = ({
   };
 
   const handleEdit = () => {
-    onEdit(); // Removed 'project' as it is undefined in the current context
+    onEdit(project);
     setIsDropdownOpen(false);
   };
 
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `https://localhost:5173/api/projects/${project.id}`, // Ensure 'project' is passed as a prop or defined
+        `https://localhost:5173/api/projects/${project.id}`,
         {
           method: "DELETE",
           headers: {
@@ -32,7 +25,7 @@ const ProjectCards = ({
         }
       );
       if (response.ok) {
-        onDelete(project.id); // Ensure 'project' is passed as a prop or defined
+        onDelete(project.id);
         setIsDropdownOpen(false);
       }
     } catch (error) {
@@ -43,11 +36,7 @@ const ProjectCards = ({
   return (
     <div className="project-card">
       <div className="project-card-header">
-        <img
-          src={logo || "default-logo.png"}
-          alt={`${title} logo`}
-          className="project-logo"
-        />
+        <img src={project.img || "default-logo.png"} className="project-logo" />
         <div className="project-actions">
           <button className="dropdown-toggle" onClick={toggleDropdown}>
             &#x22EE; {/* Vertical ellipsis icon */}
@@ -71,9 +60,9 @@ const ProjectCards = ({
         </div>
       </div>
       <div className="project-card-body">
-        <h3 className="project-title">{title}</h3>
-        <p className="project-company">{company}</p>
-        <p className="project-description">{description}</p>
+        <h3 className="project-title">{project.ProjectName}</h3>
+        <p className="project-client">{project.client?.clientName}</p>
+        <p className="project-description">{project.description}</p>
         <p
           className={`project-status ${
             status === "Completed" ? "completed" : "in-progress"
