@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggle = document.getElementById("theme-toggle");
   const rootElement = document.documentElement;
 
-  // Load saved theme from localStorage
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme === "dark") {
     rootElement.classList.add("dark-theme");

@@ -15,12 +15,12 @@ const ProjectCards = ({ project, onDelete, onEdit }) => {
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `https://localhost:5173/api/projects/${project.id}`,
+        `https://localhost:7297/api/projects/${project.id}`,
         {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            "X-API-KEY": import.meta.env.VITE_API_KEY,
+            "X-API-KEY": import.meta.env.VITE_X_API_KEY,
           },
         }
       );
@@ -43,17 +43,17 @@ const ProjectCards = ({ project, onDelete, onEdit }) => {
           </button>
           {isDropdownOpen && (
             <div className="dropdown-menu">
-              <button className="dropdown-item" onClick={handleEdit}>
-                <span role="img" aria-label="edit">
-                  ✏️
-                </span>{" "}
-                Edit
+              <button
+                className="dropdown-item dropdown-item-edit"
+                onClick={handleEdit}
+              >
+                <i className="fa-solid fa-pen"></i> Edit
               </button>
-              <button className="dropdown-item delete" onClick={handleDelete}>
-                <span role="img" aria-label="delete">
-                  🗑️
-                </span>{" "}
-                Delete Project
+              <button
+                className="dropdown-item dropdown-item-delete"
+                onClick={handleDelete}
+              >
+                <i className="fa-solid fa-trash"></i> Delete Project
               </button>
             </div>
           )}

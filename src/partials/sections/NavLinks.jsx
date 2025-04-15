@@ -3,7 +3,7 @@ import NavLinkItem from "../components/NavLinkItem";
 import { useAuth } from "../../contexts/AuthContext";
 
 const NavLinks = () => {
-  const { auth } = useAuth();
+  const { role } = useAuth();
 
   return (
     <nav className="nav-links">
@@ -13,7 +13,7 @@ const NavLinks = () => {
         iconClass="fa-duotone fa-solid fa-briefcase"
       />
 
-      {auth.role === "admin" && (
+      {role === "admin" && (
         <>
           <NavLinkItem
             to="/admin/members"

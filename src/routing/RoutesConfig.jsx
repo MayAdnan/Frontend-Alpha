@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { AdminRoute, ProtectedRoute } from "./ProtectedRoutes";
+import { ProtectedRoute } from "./ProtectedRoutes";
+import { AdminRoute } from "./ProtectedRoutes";
 
 import PortalLayout from "../pages/layouts/PortalLayout";
 import CenterScreenLayout from "../pages/layouts/CenterScreenLayout";

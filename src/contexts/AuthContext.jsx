@@ -1,14 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-const apiEndpoint = `${
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5173"
-}/admin/projects`;
-
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState("admin");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("authUser");
@@ -19,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const signUp = async (formData) => {
-    const response = await fetch(`${apiEndpoint}/signup`, {
+    const response = await fetch(`https://localhost:7297/api/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      const response = await fetch(`${apiEndpoint}/signin`, {
+      const response = await fetch(`https://localhost:7297/api/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +59,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signOut = async () => {
-    const response = await fetch(`${apiEndpoint}/signout`, {
+    const response = await fetch(`https://localhost:7297/api/signout`, {
       method: "POST",
       headers: {
         "X-API-KEY": import.meta.env.VITE_X_API_KEY,
@@ -76,7 +73,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ loading, user, signUp, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ loading, role, user, signUp, signIn, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );

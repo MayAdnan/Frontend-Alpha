@@ -9,7 +9,7 @@ const Header = () => {
   const fetchUserDetails = async (userId) => {
     try {
       const response = await fetch(
-        `https://localhost:5173/api/users/${userId}`,
+        `https://localhost:7297/api/users/${userId}`,
         {
           method: "GET",
           headers: {
@@ -47,8 +47,8 @@ const Header = () => {
 
   return (
     <header className="header">
-      <div className="header-content">
-        <div className="logo">Project Management</div>
+      <div className="page-header">
+        <div className="logo"></div>
         <div className="user-info" onClick={toggleDropdown}>
           {user && (
             <img

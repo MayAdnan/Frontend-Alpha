@@ -8,7 +8,7 @@ const Projects = () => {
   const [clients, setClients] = useState([]);
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filter, setFilter] = useState("All");
+  const [filterd, setFilterd] = useState("All");
   const [isEditMode, setIsEditMode] = useState(false);
   const [editProjectId, setEditProjectId] = useState(null);
   const [newProject, setNewProject] = useState(primeProjectState());
@@ -27,12 +27,18 @@ const Projects = () => {
     };
   }
 
+  useEffect(() => {
+    fetchProjects();
+    fetchClients();
+    fetchUsers();
+  }, []);
+
   const fetchProjects = async () => {
-    const response = await fetch("https://localhost:5173/api/projects", {
+    const response = await fetch(`https://localhost:7297/api/projects`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-API-KEY": import.meta.env.VITE_API_KEY,
+        "X-API-KEY": import.meta.env.VITE_X_API_KEY,
       },
     });
     if (response.ok) {
@@ -40,12 +46,13 @@ const Projects = () => {
       setProjects(data);
     }
   };
+
   const fetchClients = async () => {
-    const response = await fetch("https://localhost:5173/api/clients", {
+    const response = await fetch(`https://localhost:7297/api/clients`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-API-KEY": import.meta.env.VITE_API_KEY,
+        "X-API-KEY": import.meta.env.VITE_X_API_KEY,
       },
     });
     if (response.ok) {
@@ -55,11 +62,11 @@ const Projects = () => {
   };
 
   const fetchUsers = async () => {
-    const response = await fetch("https://localhost:5173/api/users", {
+    const response = await fetch(`https://localhost:7297/api/users`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-API-KEY": import.meta.env.VITE_API_KEY,
+        "X-API-KEY": import.meta.env.VITE_X_API_KEY,
       },
     });
     if (response.ok) {
@@ -93,12 +100,12 @@ const Projects = () => {
     if (!newProject.projectName) {
       errors.projectName = "Project name is required";
     }
-    if (!newProject.clientId) {
-      errors.clientId = "Client must be selected.";
-    }
-    if (!newProject.userId) {
-      errors.userId = "Project Owner must be selected.";
-    }
+    // if (!newProject.clientId) {
+    //   errors.clientId = "Client must be selected.";
+    // }
+    // if (!newProject.userId) {
+    //   errors.userId = "Project Owner must be selected.";
+    // }
     if (!newProject.startDate) {
       errors.startDate = "Start date is required";
     }
@@ -129,10 +136,10 @@ const Projects = () => {
     formData.append("StatusId", newProject.statusId || 1);
     formData.append("Created", newProject.created || new Date().toISOString());
 
-    const response = await fetch("https://localhost:5173/api/projects", {
+    const response = await fetch(`https://localhost:7297/api/projects`, {
       method: "PUT",
       headers: {
-        "X-API-KEY": import.meta.env.VITE_API_KEY,
+        "X-API-KEY": import.meta.env.VITE_X_API_KEY,
       },
       body: formData,
     });
@@ -157,27 +164,25 @@ const Projects = () => {
     const errors = {};
 
     if (!newProject.projectName.trim()) {
-      alert("Project name is required.");
-      return;
+      errors.projectName = "Project name is required.";
     }
     if (!newProject.startDate) {
-      alert("Start date is required.");
-      return;
+      errors.startDate = "Start date is required.";
     }
     if (!newProject.clientId) {
-      alert("Client must be selected.");
-      return;
+      errors.clientId = "Client must be selected.";
     }
     if (!newProject.userId) {
-      alert("Project Owner must be selected.");
-      return;
+      errors.userId = "Project Owner must be selected.";
     }
+
     if (Object.keys(errors).length > 0) {
-      alert("Please fill in all required fields.");
+      alert(Object.values(errors).join("\n"));
       return;
     }
+
     const formData = new FormData();
-    formData.append("Image", newProject.imageFile);
+    formData.append("Image", newProject.imageFile || "");
     formData.append("ProjectName", newProject.projectName);
     formData.append("Description", newProject.description || "");
     formData.append("StartDate", newProject.startDate);
@@ -190,10 +195,10 @@ const Projects = () => {
     formData.append("UserId", newProject.userId);
     formData.append("Created", newProject.created || new Date().toISOString());
 
-    const response = await fetch("https://localhost:5173/api/projects", {
+    const response = await fetch(`https://localhost:7297/api/projects`, {
       method: "POST",
       headers: {
-        "X-API-KEY": import.meta.env.VITE_API_KEY,
+        "X-API-KEY": import.meta.env.VITE_X_API_KEY,
       },
       body: formData,
     });
@@ -205,17 +210,11 @@ const Projects = () => {
   };
 
   const getFilteredProjects = projects.filter((project) => {
-    if (filter === "completed") {
+    if (filterd === "completed") {
       return project.status.id === 2;
     }
     return true;
   });
-
-  useEffect(() => {
-    fetchProjects();
-    fetchClients();
-    fetchUsers();
-  }, []);
 
   return (
     <div id="projects">
@@ -223,43 +222,46 @@ const Projects = () => {
         <h1 className="h2">Projects</h1>
         <ModalButton
           type="add"
+          target="#addProjectModal"
           text="Add Project"
+          className="btn"
           onClick={() => {
+            setIsEditMode(false);
             setIsModalOpen(true);
             setNewProject(primeProjectState());
-            setIsEditMode(false);
           }}
         />
       </div>
       <div className="tabs">
         <button
-          className={filter === "All" ? "active" : ""}
-          onClick={() => setFilter("All")}
+          className={filterd === "All" ? "active" : ""}
+          onClick={() => setFilterd("All")}
         >
-          All (
+          ALL [
           {
             projects.filter(
               (project) => project.status.id === 1 || project.status.id === 2
             ).length
           }
-          )
+          ]
         </button>
         <button
-          className={filter === "Completed" ? "active" : ""}
-          onClick={() => setFilter("Completed")}
+          className={filterd === "Completed" ? "active" : ""}
+          onClick={() => setFilterd("Completed")}
         >
-          Completed (
-          {projects.filter((project) => project.status.id === 2).length})
+          COMPLETED [
+          {projects.filter((project) => project.status.id === 2).length}]
         </button>
       </div>
       <div className="containerproject">
-        {getFilteredProjects === "all"
+        {filterd === "all"
           ? projects.map((p) => (
               <ProjectCards
                 key={p.id}
                 project={p}
                 onEdit={handleEditProject}
                 onDelete={handleDeleteProject}
+                className="card"
               />
             ))
           : getFilteredProjects.map((p) => (
@@ -268,162 +270,189 @@ const Projects = () => {
                 project={p}
                 onEdit={handleEditProject}
                 onDelete={handleDeleteProject}
+                className="card"
               />
             ))}
       </div>
-      <Modal
-        id="addProjectModal"
-        title={isEditMode ? "Edit Project" : "Add Project"}
-        isOpen={isModalOpen}
-        onClose={() => {
-          setNewProject(primeProjectState());
-          setIsModalOpen(false);
-        }}
-      >
-        <form
-          noValidate
-          onSubmit={isEditMode ? handleUpdateProject : handleAddProject}
-          encType="multipart/form-data"
+      {isModalOpen && (
+        <Modal
+          id="addProjectModal"
+          title={isEditMode ? "Edit Project" : "Add Project"}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setNewProject(primeProjectState());
+            setIsModalOpen(false);
+          }}
+          className="modal"
         >
-          <div className="form-group image-picker">
-            <div
-              className="image-picker-container"
-              onClick={() => document.getElementById("imageInput").click()}
-            >
-              {newProject.image ? (
-                <img
-                  src={newProject.image}
-                  alt="Selected"
-                  className="selected-image"
-                />
-              ) : (
-                <i className="camera-icon fa fa-camera"></i>
-              )}
+          <form
+            noValidate
+            onSubmit={isEditMode ? handleUpdateProject : handleAddProject}
+            encType="multipart/form-data"
+            className="form"
+          >
+            <div className="form-group image-picker">
+              <div
+                className="image-picker-container"
+                onClick={() => document.getElementById("imageInput").click()}
+              >
+                {newProject.image ? (
+                  <img
+                    src={newProject.image}
+                    alt="Selected"
+                    className="selected-image"
+                  />
+                ) : (
+                  <i className="camera-icon fa fa-camera"></i>
+                )}
+              </div>
+              <input
+                type="file"
+                id="imageInput"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      setNewProject({
+                        ...newProject,
+                        image: event.target.result,
+                        imageFile: file,
+                      });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
             </div>
-            <input
-              type="file"
-              id="imageInput"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = (event) => {
+            <div className="form-group">
+              <label htmlFor="projectName" className="form-label">
+                Project Name
+              </label>
+              <input
+                type="text"
+                id="projectName"
+                className="form-input"
+                value={newProject.projectName}
+                onChange={(e) =>
+                  setNewProject({ ...newProject, projectName: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="clientId" className="form-label">
+                Client Name
+              </label>
+              <select
+                id="clientId"
+                className="form-select"
+                value={newProject.clientId}
+                onChange={(e) =>
+                  setNewProject({ ...newProject, clientId: e.target.value })
+                }
+              >
+                <option value="">Select Client Name</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.clientName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="description" className="form-label">
+                Description
+              </label>
+              <textarea
+                id="description"
+                className="form-textarea"
+                value={newProject.description}
+                onChange={(e) =>
+                  setNewProject({ ...newProject, description: e.target.value })
+                }
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="startDate" className="form-label">
+                Start Date
+              </label>
+              <input
+                type="date"
+                id="startDate"
+                className="form-input"
+                value={newProject.startDate}
+                onChange={(e) =>
+                  setNewProject({ ...newProject, startDate: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="endDate" className="form-label">
+                End Date
+              </label>
+              <input
+                type="date"
+                id="endDate"
+                className="form-input"
+                value={newProject.endDate}
+                onChange={(e) =>
+                  setNewProject({ ...newProject, endDate: e.target.value })
+                }
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="userId" className="form-label">
+                Project Owner
+              </label>
+              <select
+                id="userId"
+                className="form-select"
+                value={newProject.userId}
+                onChange={(e) =>
+                  setNewProject({ ...newProject, userId: e.target.value })
+                }
+              >
+                <option value="">Select Project Owner</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.firstName} {user.lastName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="budget" className="form-label">
+                Budget
+              </label>
+              <div className="input-group">
+                <span className="input-group-text">$</span>
+                <input
+                  type="number"
+                  id="budget"
+                  className="form-input"
+                  placeholder="0"
+                  value={newProject.budget === null ? "" : newProject.budget}
+                  onChange={(e) =>
                     setNewProject({
                       ...newProject,
-                      image: event.target.result,
-                      imageFile: file,
-                    });
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="projectName">Project Name</label>
-            <input
-              type="text"
-              id="projectName"
-              value={newProject.projectName}
-              onChange={(e) =>
-                setNewProject({ ...newProject, projectName: e.target.value })
-              }
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="clientId">Client Name</label>
-            <select
-              id="clientId"
-              value={newProject.clientId}
-              onChange={(e) =>
-                setNewProject({ ...newProject, clientId: e.target.value })
-              }
-              required
-            >
-              <option value="">Select Client Name</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.clientName}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="description">Description</label>
-            <textarea
-              id="description"
-              value={newProject.description}
-              onChange={(e) =>
-                setNewProject({ ...newProject, description: e.target.value })
-              }
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="startDate">Start Date</label>
-            <input
-              type="date"
-              id="startDate"
-              value={newProject.startDate}
-              onChange={(e) =>
-                setNewProject({ ...newProject, startDate: e.target.value })
-              }
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="endDate">End Date</label>
-            <input
-              type="date"
-              id="endDate"
-              value={newProject.endDate}
-              onChange={(e) =>
-                setNewProject({ ...newProject, endDate: e.target.value })
-              }
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="userId">Project Owner</label>
-            <select
-              id="userId"
-              value={newProject.userId}
-              onChange={(e) =>
-                setNewProject({ ...newProject, userId: e.target.value })
-              }
-              required
-            >
-              <option value="">Select Project Owner</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.firstName} {user.lastName}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="budget"> Budget</label>
-            <span className="input-group-text">$</span>
-            <input
-              type="number"
-              id="budget"
-              plackeholder="0"
-              value={newProject.budget === null ? "" : newProject.budget}
-              onChange={(e) =>
-                setNewProject({
-                  ...newProject,
-                  budget: e.target.value === "" ? null : Number(e.target.value),
-                })
-              }
-            />
-          </div>
-          <button type="submit">
-            {isEditMode ? "Update Project" : "Add Project"}
-          </button>
-        </form>
-      </Modal>
+                      budget:
+                        e.target.value === "" ? null : Number(e.target.value),
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <button type="submit" className="btn">
+              {isEditMode ? "Update Project" : "Add Project"}
+            </button>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 };
