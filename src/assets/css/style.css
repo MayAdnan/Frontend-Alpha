@@ -130,6 +130,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100dvh;
+  overflow-y: auto;
 }
 
 .wrapper-portal {
@@ -295,6 +296,7 @@ h6,
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  justify-content: center;
 
   &:hover {
     color: var(--text-color);
@@ -412,7 +414,7 @@ a:hover {
 }
 
 .btn-submit {
-  width: 100%;
+  width: webkit-fill-available;
 }
 
 .btn-add::before {
@@ -463,11 +465,27 @@ a:hover {
   font-weight: 400;
   font-size: 1.3em;
 }
+.btn.btn-create {
+  width: 100%;
+  padding: 0.75rem;
+  border-color: var(--btn-border-color);
+  background-color: var(--btn-background-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn.btn-create:hover {
+  color: var(--white);
+  border-color: var(--white);
+}
 
 /* modals */
 .modal {
   background-color: var(--modal-screen-background-color);
-  display: none;
   justify-content: center;
   align-items: center;
   position: fixed;
@@ -475,6 +493,7 @@ a:hover {
   left: 0;
   right: 0;
   bottom: 0;
+  display: grid;
 }
 
 .modal > .modal-content {
@@ -483,8 +502,11 @@ a:hover {
   padding: 2rem;
   box-shadow: 0 3px 4px 1px rgba(0, 0, 0, 0.1);
   width: 90%;
+  max-width: 550px;
+  max-height: 90vh;
+  font-size: 12px;
+  overflow: auto;
 }
-
 .modal > .modal-content header,
 .modal > .modal-content .modal-header {
   display: flex;
@@ -492,15 +514,11 @@ a:hover {
   align-items: center;
   margin-bottom: 2rem;
 }
-
-.modal > .modal-content main,
-.modal > .modal-content .modal-body {
-}
-
 /* forms */
 .form {
   width: 100%;
   position: relative;
+  overflow: auto;
 }
 .form input,
 .form select,
@@ -556,30 +574,6 @@ form input[type="checkbox"] {
   width: 20px;
 }
 
-.input-validation-error,
-.input-validation-error:focus {
-  border-color: var(--form-error-input-border-color);
-}
-
-.field-validation-error {
-  background-color: var(--form-error-message-background-color);
-  color: var(--form-error-message-text-color);
-  font-size: 0.8em;
-  padding: 0.48em 1rem;
-  border-radius: 14px;
-  position: absolute;
-  top: 3px;
-  right: 0.2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.field-validation-error::before {
-  content: "\f071";
-  font-family: var(--font-fa-pro);
-  font-size: 1.2em;
-}
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -588,6 +582,24 @@ form input[type="checkbox"] {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  border: 1px solid var(--form-input-border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--form-input-border-focus-color);
 }
 
 /* sections & components */
@@ -620,19 +632,20 @@ section > .content {
   gap: 2rem;
 }
 
-/* custom modals */
 #addClientModal .modal-content {
   width: 450px;
 }
 
 #signup,
 #signin {
-  width: 80%;
+  width: 100%;
   margin: 0 auto;
 }
 #signup .content,
 #signin .content {
   padding: 2rem 4rem 1rem;
+  background-color: var(--white-100);
+  border-radius: 20px;
 }
 
 #signup .section-header,
@@ -642,7 +655,7 @@ section > .content {
 
 #signup .section-body,
 #signin .section-body {
-  margin: 1rem 0;
+  margin: 2rem 0;
 }
 
 #signup .section-footer,
@@ -662,22 +675,28 @@ section > .content {
   display: flex;
   gap: 10px;
   margin-top: 20px;
+  background: transparent;
+  border-radius: 5px 5px 0 0;
+  border-bottom: 1px solid;
+  border-color: var(--border-color);
 }
-
 .tabs button {
   padding: 10px 20px;
   border: none;
   background-color: transparent;
   cursor: pointer;
   border-radius: 5px;
-  color: var(--gray-800);
   font-size: 14px;
   font-weight: 600;
+  font-family: var(--font-standard);
+  color: var(--text-color);
 }
 
 .tabs button.active {
   color: var(--blue);
+  position: relative;
 }
+
 .tabs button::after {
   content: "";
   display: block;
@@ -691,6 +710,15 @@ section > .content {
   height: 5px;
 }
 
+.sorting-button::after {
+  content: "";
+  display: block;
+
+  width: 100%;
+  background: transparent;
+  border-radius: 5px 5px 0 0;
+  color: var(--blue);
+}
 .containerproject {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -710,22 +738,6 @@ section > .content {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-
-.image-picker-container:hover {
-  border-color: var(--form-input-border-focus-color);
-}
-
-.image-icon {
-  font-size: 2rem;
-  color: var(--form-input-placeholder-color);
-}
-
-.selected-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 16px;
-}
 .project-card {
   position: relative;
   background-color: var(--card-project-color);
@@ -744,14 +756,17 @@ section > .content {
   width: 56px;
   height: 56px;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
 }
+
 .dropdown-menu {
   position: absolute;
-  top: 40px;
-  right: 10px;
+  top: 50px;
+  left: 180px;
   background-color: var(--background-color);
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 150px;
   z-index: 1000;
   padding: 10px;
   display: flex;
@@ -782,6 +797,33 @@ section > .content {
   font-size: 16px;
   background-color: var(--background-color);
 }
+.image-picker-container {
+  width: 75px;
+  height: 75px;
+  border: 2px dashed var(--form-input-border-color);
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: var(--modal-background-color);
+  margin: 0 auto 1.5rem;
+}
+.image-picker-container:hover {
+  border-color: var(--form-input-border-focus-color);
+}
+
+.image-icon {
+  font-size: 2rem;
+  color: var(--form-input-placeholder-color);
+}
+
+.selected-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
 .project-title {
   margin: 0 0 10px 0;
   font-size: 16px;
@@ -792,6 +834,8 @@ section > .content {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px;
+  font-weight: 600;
+  color: var(--text-color);
 }
 .project-client {
   margin: 0 0 10px 0;
@@ -817,4 +861,61 @@ section > .content {
   max-width: 550px;
   max-height: 1000px;
   font-size: 12px;
+}
+
+#project-budget {
+  position: relative;
+}
+
+#project-budget .dollar-img {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+}
+
+.form-group > .input-group > #budget {
+  padding-left: 35px;
+}
+
+.ellipsis {
+  position: absolute;
+  top: 5px;
+  left: 280px;
+  font-size: 1.7em;
+  color: var(--gray-800);
+  border-radius: 10px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+}
+
+.ellipsisTable {
+  font-size: 1.7em;
+  color: var(--gray-800);
+  border-radius: 10px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+}
+
+.ellipsis:hover {
+  color: var(--navlink-text-hover-color);
+  background-color: var(--gray-200);
+}
+
+.ellipsis i {
+  color: var(--gray-800);
 }

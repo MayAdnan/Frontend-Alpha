@@ -29,7 +29,7 @@ const SignIn = () => {
           <div className="section-header">
             <h1>Login</h1>
           </div>
-          <div className="card-body section-body">
+          <div className="section-body">
             <form onSubmit={handleSubmit} method="post" noValidate>
               <div className="form-group">
                 <label className="form-label">Email</label>
@@ -51,7 +51,7 @@ const SignIn = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              <button type="submit" className="btn btn-submit">
+              <button className="btn" type="submit">
                 Log In
               </button>
             </form>

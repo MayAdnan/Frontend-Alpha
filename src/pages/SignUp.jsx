@@ -68,93 +68,98 @@ const SignUp = () => {
   };
 
   return (
-    <div id="signup-page">
-      <div id="signup" className="card">
-        <div className="section-header">
-          <h1> Create Account </h1>
+    <div className="wrapper-centerscreen">
+      <div id="signup-page">
+        <div id="signup" className="card">
+          <div className="section-header">
+            <h1> Create Account </h1>
+          </div>
+          <div className="section-body">
+            <form noValidate onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label>First Name: </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="Enter your first name"
+                  value={FirstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Last Name </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Enter your last name"
+                  value={LastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Email </label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={Email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Password </label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  value={Password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Confirm Password</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  value={ConfirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  checked={TermsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  required
+                />
+                <span>I accept </span>
+                <Link to="/auth/termsandconditions">
+                  {" "}
+                  Terms and conditions{" "}
+                </Link>
+              </div>
+
+              <button className="btn" type="submit">
+                Create Account
+              </button>
+            </form>
+          </div>
+          <div className="section-footer">
+            <span>Already have an account?</span>
+            <Link to="/auth/signin"> Login </Link>
+          </div>
         </div>
-        <div className="section-body">
-          <form noValidate onSubmit={handleSubmit}>
-            <div>
-              <label>First Name: </label>
-              <input
-                type="text"
-                name="firstName"
-                placeholder="Enter your first name"
-                value={FirstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <label>Last Name </label>
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Enter your last name"
-                value={LastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <label>Email </label>
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                value={Email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <label>Password </label>
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                value={Password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label>Confirm Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                value={ConfirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                checked={TermsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
-                required
-              />
-              <span>I accept </span>
-              <Link to="/auth/termsandconditions"> Terms and conditions </Link>
-            </div>
-
-            <button className="btn" type="submit">
-              Create Account
-            </button>
-          </form>
-        </div>
-        <div className="section-footer">
-          <span>Already have an account?</span>
-          <Link to="/auth/signin"> Login </Link>
-        </div>
+        <LogotypeLink />
       </div>
-      <LogotypeLink />
     </div>
   );
 };
