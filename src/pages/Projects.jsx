@@ -368,7 +368,7 @@ const Projects = () => {
                         setNewProject((prev) => ({
                           ...prev,
                           imageFile: null,
-                          image: event.target.result, // Base64 string
+                          image: event.target.result, // Base64 string, hjälp av AI
                         }));
                       };
                       reader.readAsDataURL(file);
